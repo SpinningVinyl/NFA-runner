@@ -1,0 +1,14 @@
+# this DFA accepts strings like abc, abbc, abbbc, etc.
+Q: q0, q1, q2, q3, q4
+L: a, b, c
+S: q0
+A: q0, q3
+q0,a->q1
+q0,b,c->q4
+q1,b->q2
+q2,b->q2
+q2,c->q3
+q1,a,c->q4
+q2,a->q4
+q3,a,b,c->q4
+q4,a,b,c->q4

@@ -1,0 +1,9 @@
+# this NFA accepts all strings where b is the penultimate character, e.g. ba, aba, bbb, aaaabbbbaaaba etc.
+Q: q0,q1,q2
+L: a,b
+S: q0
+A: q2
+q0,b->q0,q1
+q0,a->q0
+q1,a->q2
+q1,b->q2
