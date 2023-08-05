@@ -36,7 +36,7 @@ public class StateMachine {
         acceptStates.forEach(state -> sb.append(state).append(" "));
         sb.append("\nAlphabet: ");
         alphabet.forEach(symbol -> sb.append(symbol).append(" "));
-        sb.append("\nTransitions: ");
+        sb.append("\nTransitions:\n");
         transitions.keySet().forEach(key -> {
             sb.append("(").append(key).append(") -> ");
             transitions.get(key).forEach(state -> sb.append(state).append(" "));
