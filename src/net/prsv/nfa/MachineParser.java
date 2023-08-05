@@ -11,6 +11,8 @@ public class MachineParser {
     private final HashSet<Character> alphabet = new HashSet<>();
     private final HashSet<String> acceptStates = new HashSet<>();
     private final HashMap<Pair, HashSet<String>> transitions = new HashMap<>();
+    private final HashMap<String, HashSet<String>> nullTransitions = new HashMap<>();
+
     private final File inputFile;
     private HashSet<String> startStates;
 
@@ -63,12 +65,7 @@ public class MachineParser {
                 } else if (line.contains("->")) {
                     HashSet<String> newStates = new HashSet<>();
                     String[] temp = line.split("->");
-                    String[] leftSide = temp[0].split(",");
                     String[] rightSide = temp[1].split(",");
-                    String oldState = leftSide[0].strip();
-                    if (!states.contains(oldState)) {
-                        throw new RuntimeException("Fatal error: state " + oldState + " not defined in transition " + line);
-                    }
                     for (String s : rightSide) {
                         String newState = s.strip();
                         if (!states.contains(newState)) {
@@ -76,12 +73,22 @@ public class MachineParser {
                         }
                         newStates.add(newState);
                     }
-                    for (int i = 1; i < leftSide.length; i++) {
-                        char symbol = leftSide[i].strip().charAt(0);
-                        if (!alphabet.contains(symbol)) {
-                            throw new RuntimeException("Fatal error: symbol " + symbol + " not defined in transition " + line);
+                    if (!temp[0].contains(",")) {
+                        String oldState = temp[0].strip();
+                        nullTransitions.put(oldState, newStates);
+                    } else {
+                        String[] leftSide = temp[0].split(",");
+                        String oldState = leftSide[0].strip();
+                        if (!states.contains(oldState)) {
+                            throw new RuntimeException("Fatal error: state " + oldState + " not defined in transition " + line);
                         }
-                        transitions.put(new Pair(oldState, symbol), newStates);
+                        for (int i = 1; i < leftSide.length; i++) {
+                            char symbol = leftSide[i].strip().charAt(0);
+                            if (!alphabet.contains(symbol)) {
+                                throw new RuntimeException("Fatal error: symbol " + symbol + " not defined in transition " + line);
+                            }
+                            transitions.put(new Pair(oldState, symbol), newStates);
+                        }
                     }
                 }
             }
@@ -97,12 +104,12 @@ public class MachineParser {
 //            }
 //        }
         if(startStates.isEmpty()) {
-            throw new RuntimeException("Fatal error: start state not defined.");
+            throw new RuntimeException("Fatal error: no start states defined.");
         }
         if(acceptStates.isEmpty()) {
             throw new RuntimeException("Fatal error: no accept states defined.");
         }
-        return new StateMachine(states, alphabet, acceptStates, transitions, startStates);
+        return new StateMachine(states, alphabet, acceptStates, transitions, nullTransitions, startStates);
     }
 
 }

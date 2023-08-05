@@ -14,7 +14,7 @@ public class Main {
         System.out.println("Parsing machine description...");
         MachineParser mp = new MachineParser(machineFile);
         StateMachine machine = mp.parse();
-        machine.printSummary();
+        System.out.println(machine.summary());
 
         boolean quit = false;
         Scanner s = new Scanner(System.in);
@@ -28,7 +28,7 @@ public class Main {
                 System.out.println("Bye!");
                 continue;
             } else if(input.trim().equalsIgnoreCase("list")) {
-                machine.printConfig();
+                System.out.println(machine.config());
                 continue;
             }
             boolean accepted = machine.run(input);

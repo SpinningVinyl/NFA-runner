@@ -8,46 +8,67 @@ public class StateMachine {
     private final HashSet<Character> alphabet;
     private final HashSet<String> acceptStates;
     private final HashMap<Pair, HashSet<String>> transitions;
+    private final HashMap<String, HashSet<String>> nullTransitions;
     private final HashSet<String> startStates;
 
     public StateMachine(HashSet<String> states,
                         HashSet<Character> alphabet,
                         HashSet<String> acceptStates,
                         HashMap<Pair, HashSet<String>> transitions,
+                        HashMap<String, HashSet<String>> nullTransitions,
                         HashSet<String> startStates) {
         this.states = states;
         this.alphabet = alphabet;
         this.acceptStates = acceptStates;
         this.transitions = transitions;
+        this.nullTransitions = nullTransitions;
         this.startStates = startStates;
     }
 
-    public void printConfig() {
-        System.out.println("===== DFA configuration =====");
-        System.out.print("States: ");
-        states.forEach(state -> System.out.print(state + " "));
-        System.out.println("\nStart states: ");
-        startStates.forEach(state -> System.out.print(state + " "));
-        System.out.print("\nAccept states: ");
-        acceptStates.forEach(state -> System.out.print(state + " "));
-        System.out.print("\nAlphabet: ");
-        alphabet.forEach(symbol -> System.out.print(symbol + " "));
-        System.out.println("\nTransitions: ");
+    public String config() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("===== NFA configuration =====\n");
+        sb.append("States: ");
+        states.forEach(state -> sb.append(state).append(" "));
+        sb.append("\nStart states: ");
+        startStates.forEach(state -> sb.append(state).append(" "));
+        sb.append("\nAccept states: ");
+        acceptStates.forEach(state -> sb.append(state).append(" "));
+        sb.append("\nAlphabet: ");
+        alphabet.forEach(symbol -> sb.append(symbol).append(" "));
+        sb.append("\nTransitions: ");
         transitions.keySet().forEach(key -> {
-            System.out.print("(" + key + ") -> ");
-            transitions.get(key).forEach(state -> System.out.print(state + " "));
-            System.out.println();
+            sb.append("(").append(key).append(") -> ");
+            transitions.get(key).forEach(state -> sb.append(state).append(" "));
+            sb.append("\n");
         });
+        if (!nullTransitions.isEmpty()) {
+            sb.append("\nNull transitions: ");
+            nullTransitions.keySet().forEach(key -> {
+                sb.append(key).append(" -> ");
+                nullTransitions.get(key).forEach(state -> sb.append(state).append(" "));
+                sb.append("\n");
+            });
+        }
+        return sb.toString();
     }
 
-    public void printSummary() {
-        System.out.println("===== DFA summary =====");
-        System.out.println("States: " + states.size() + ", accept states: " +
-                acceptStates.size() + ", transitions: " +
-                transitions.size());
-        System.out.print("Alphabet: ");
-        alphabet.forEach(symbol -> System.out.print(symbol + " "));
-        System.out.println();
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("===== NFA summary =====\n");
+        sb.append("States: ").
+                append(states.size()).
+                append(", accept states: ").
+                append(acceptStates.size()).
+                append(", transitions: ").
+                append(transitions.size()).
+                append(", null transitions: ").
+                append(nullTransitions.size()).
+                append("\n");
+        sb.append("Alphabet: ");
+        alphabet.forEach(symbol -> sb.append(symbol).append(" "));
+        sb.append("\n");
+        return sb.toString();
     }
 
     public boolean run(String input) {
@@ -57,6 +78,12 @@ public class StateMachine {
         HashSet<String> currentStates = startStates;
         if(!input.equals("")) {
             for (int i = 0; i < input.length(); i++) {
+                // if any of the current states has null transitions defined, add them to the current states
+                for (String state : currentStates) {
+                    if (nullTransitions.containsKey(state)) {
+                        currentStates.addAll(nullTransitions.get(state));
+                    }
+                }
                 HashSet<String> newStates = new HashSet<>();
                 char symbol = input.charAt(i);
                 System.out.print("Current symbol: '" + symbol + "'. ");
