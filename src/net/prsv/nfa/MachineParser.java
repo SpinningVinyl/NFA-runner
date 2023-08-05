@@ -75,6 +75,9 @@ public class MachineParser {
                     }
                     if (!temp[0].contains(",")) {
                         String oldState = temp[0].strip();
+                        if (!states.contains(oldState)) {
+                            throw new RuntimeException("Fatal error: state " + oldState + " not defined in transition " + line);
+                        }
                         nullTransitions.put(oldState, newStates);
                     } else {
                         String[] leftSide = temp[0].split(",");
