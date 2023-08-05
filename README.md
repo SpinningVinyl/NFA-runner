@@ -7,7 +7,7 @@ It can also run the same deterministic state automata (DFAs) as [UDFA](https://g
 To run the application:
 
 ```bash
-java nfa file
+java NFA file
 ```
 Where `file` is a file containing the description of the automaton.
 

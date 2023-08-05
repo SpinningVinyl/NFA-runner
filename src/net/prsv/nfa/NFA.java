@@ -3,7 +3,7 @@ package net.prsv.nfa;
 import java.io.File;
 import java.util.Scanner;
 
-public class Main {
+public class NFA {
     
     public static void main(String[] args) {
         if(args.length == 0) {
